@@ -1,12 +1,22 @@
-import { afterEach, describe, expect, test } from 'bun:test';
+import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
 
 import { getAuthStatus, getProviderAuthHint } from './auth.ts';
 import { ATLAS_CLOUD_BASE_URL, createAtlasCloud } from './atlascloud.ts';
 import { getProviderFactory, isProviderSupported } from './registry.ts';
 
 describe('Atlas Cloud provider', () => {
+	let previousApiKey: string | undefined;
+
+	beforeEach(() => {
+		previousApiKey = process.env.ATLASCLOUD_API_KEY;
+	});
+
 	afterEach(() => {
-		delete process.env.ATLASCLOUD_API_KEY;
+		if (previousApiKey === undefined) {
+			delete process.env.ATLASCLOUD_API_KEY;
+		} else {
+			process.env.ATLASCLOUD_API_KEY = previousApiKey;
+		}
 	});
 
 	test('registers an OpenAI-compatible chat model', () => {
